@@ -27,22 +27,33 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 class TestCmd(TestCase):
     def setUp(self):
         super().setUp()
-        self.igv = ThreadedTCPServer(("", 60151), ThreadedTCPRequestHandler)
+        self.igv_server = ThreadedTCPServer(
+            ("", 60151), ThreadedTCPRequestHandler)
 
-        server_thread = threading.Thread(target=self.igv.serve_forever)
+        server_thread = threading.Thread(target=self.igv_server.serve_forever)
         server_thread.daemon = True
         server_thread.start()
 
+        self.igv_client = cmdline.IGV()
+
     def tearDown(self):
-        self.igv.shutdown()
-        self.igv.server_close()
+        self.igv_server.shutdown()
+        self.igv_server.server_close()
+        #self.igv_client.close()
         super().tearDown()
 
+    def test_can_IGV_client_as_object(self):
+        self.assertTrue(isinstance(self.igv_client, cmdline.IGV))
+
+    def test_we_can_send_multiple_commands(self):
+        self.assertTrue(self.igv_client.check_igv())
+        self.assertTrue(self.igv_client.goto("chr1:12345"))
+
     def test_check_igv_is_running(self):
-        self.assertTrue(cmdline.check_igv())
+        self.assertTrue(self.igv_client.check_igv())
 
     def test_we_can_send_goto_signal(self):
-        self.assertTrue(cmdline.goto("chr1:123456"))
+        self.assertTrue(self.igv_client.goto("chr1:123456"))
 
     def test_we_can_send_load_signal(self):
-        self.assertTrue(cmdline.load("path/to/file.bam"))
+        self.assertTrue(self.igv_client.load("path/to/file.bam"))

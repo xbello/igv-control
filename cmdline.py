@@ -2,55 +2,58 @@
 import socket
 
 
-def check_igv():
-    """Return True if a copy of IGV is reachable."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("", 60151))
-    s.settimeout(5)
+class IGV():
 
-    response = ""
-    try:
-        s.sendall(bytes("echo", "ascii"))
-        response = str(s.recv(1024), "ascii")
-    finally:
-        s.close()
+    """IGV wrapper to control the program through a socket."""
 
-    if response == "echo":
-        return True
-    return False
+    def check_igv(self):
+        """Return True if a copy of IGV is reachable."""
 
+        self.open_socket()
+        response = ""
+        self.socket.sendall(bytes("echo", "ascii"))
+        response = str(self.socket.recv(1024), "ascii")
 
-def goto(position):
-    """Return "True" if IGV answered "OK" to a goto command."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("", 60151))
-    s.settimeout(1)
+        self.close()
 
-    response = ""
-    try:
-        s.sendall(bytes("goto {}".format(position), "ascii"))
-        response = str(s.recv(1024), "ascii")
-    finally:
-        s.close()
+        if response == "echo":
+            return True
+        return False
 
-    if response.startswith("OK"):
-        return True
-    return False
+    def close(self):
+        """Close the socket if it is open."""
+        self.socket.close()
 
+    def command(self, command):
+        pass
 
-def load(filepath):
-    """Return "True" if IGV answered "OK" to a load command."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("", 60151))
-    s.settimeout(1)
+    def goto(self, position):
+        """Return "True" if IGV answered "OK" to a goto command."""
+        response = ""
 
-    response = ""
-    try:
-        s.sendall(bytes("load {}".format(filepath), "ascii"))
-        response = str(s.recv(1024), "ascii")
-    finally:
-        s.close()
+        self.open_socket()
+        self.socket.sendall(bytes("goto {}".format(position), "ascii"))
+        response = str(self.socket.recv(1024), "ascii")
+        self.close()
 
-    if response.startswith("OK"):
-        return True
-    return False
+        if response.startswith("OK"):
+            return True
+        return False
+
+    def load(self, filepath):
+        """Return "True" if IGV answered "OK" to a load command."""
+        response = ""
+
+        self.open_socket()
+        self.socket.sendall(bytes("load {}".format(filepath), "ascii"))
+        response = str(self.socket.recv(1024), "ascii")
+        self.close()
+
+        if response.startswith("OK"):
+            return True
+        return False
+
+    def open_socket(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect(("", 60151))
+        self.socket.settimeout(1)
