@@ -10,7 +10,11 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     def handle(self):
         """Return the same it receives."""
         data = str(self.request.recv(1024), 'ascii')
-        response = bytes("{}".format(data), 'ascii')
+        if data == "echo":
+            response = bytes("{}".format(data), 'ascii')
+        elif data.startswith("goto"):
+            response = bytes("OK\n", 'ascii')
+
         self.request.sendall(response)
 
 
@@ -29,7 +33,11 @@ class TestCmd(TestCase):
 
     def tearDown(self):
         self.igv.shutdown()
+        self.igv.server_close()
         super().tearDown()
 
     def test_check_igv_is_running(self):
         self.assertTrue(cmdline.check_igv())
+
+    def test_igv_receives_goto_signal(self):
+        self.assertTrue(cmdline.goto("chr1:123456"))

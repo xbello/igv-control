@@ -17,3 +17,20 @@ def check_igv():
     if response == "echo":
         return True
     return False
+
+
+def goto(position):
+    """Return "True" if IGV answered "OK" to a goto command."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("", 60151))
+    s.settimeout(1)
+
+    try:
+        s.sendall(bytes("goto {}".format(position), "ascii"))
+        response = str(s.recv(1024), "ascii")
+    finally:
+        s.close()
+
+    if response.startswith("OK"):
+        return True
+    return False
