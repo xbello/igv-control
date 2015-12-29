@@ -6,7 +6,7 @@ def check_igv():
     """Return True if a copy of IGV is reachable."""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(("", 60151))
-    s.settimeout(1)
+    s.settimeout(5)
 
     try:
         s.sendall(bytes("echo", "ascii"))
@@ -14,4 +14,6 @@ def check_igv():
     finally:
         s.close()
 
-    return response
+    if response == "echo":
+        return True
+    return False

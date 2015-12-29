@@ -1,11 +1,14 @@
+"""Tests for the command line interface."""
 import socketserver
 import threading
 from unittest import TestCase
 
 import cmdline
 
+
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
     def handle(self):
+        """Return the same it receives."""
         data = str(self.request.recv(1024), 'ascii')
         response = bytes("{}".format(data), 'ascii')
         self.request.sendall(response)
@@ -13,7 +16,6 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address = True
-    pass
 
 
 class TestCmd(TestCase):
@@ -30,4 +32,4 @@ class TestCmd(TestCase):
         super().tearDown()
 
     def test_check_igv_is_running(self):
-        self.assertEqual(cmdline.check_igv(), "echo")
+        self.assertTrue(cmdline.check_igv())
