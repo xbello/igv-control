@@ -39,7 +39,6 @@ class TestCmd(TestCase):
     def tearDown(self):
         self.igv_server.shutdown()
         self.igv_server.server_close()
-        #self.igv_client.close()
         super().tearDown()
 
     def test_can_IGV_client_as_object(self):
@@ -57,3 +56,6 @@ class TestCmd(TestCase):
 
     def test_we_can_send_load_signal(self):
         self.assertTrue(self.igv_client.load("path/to/file.bam"))
+
+    def test_we_can_send_through_command_method(self):
+        self.assertEqual(self.igv_client.command("echo"), "echo")

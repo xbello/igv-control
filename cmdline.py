@@ -31,25 +31,25 @@ class IGV():
     def check_igv(self):
         """Return True if a copy of IGV is reachable."""
 
-        response = ""
-        with SocketManager(self.host, self.port) as s:
-            s.sendall(bytes("echo", "ascii"))
-            response = str(s.recv(1024), "ascii")
+        response = self.command("echo")
 
         if response == "echo":
             return True
         return False
 
     def command(self, command):
-        pass
+        """Return the response from IGV for command."""
+        response = ""
+        with SocketManager(self.host, self.port) as s:
+            s.sendall(bytes(command, "ascii"))
+            response = str(s.recv(1024), "ascii")
+
+        return response
 
     def goto(self, position):
         """Return "True" if IGV answered "OK" to a goto command."""
 
-        response = ""
-        with SocketManager(self.host, self.port) as s:
-            s.sendall(bytes("goto {}".format(position), "ascii"))
-            response = str(s.recv(1024), "ascii")
+        response = self.command("goto {}".format(position))
 
         if response.startswith("OK"):
             return True
@@ -58,10 +58,7 @@ class IGV():
     def load(self, filepath):
         """Return "True" if IGV answered "OK" to a load command."""
 
-        response = ""
-        with SocketManager(self.host, self.port) as s:
-            s.sendall(bytes("load {}".format(filepath), "ascii"))
-            response = str(s.recv(1024), "ascii")
+        response = self.command("load {}".format(filepath))
 
         if response.startswith("OK"):
             return True
