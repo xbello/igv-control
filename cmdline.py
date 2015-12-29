@@ -8,6 +8,7 @@ def check_igv():
     s.connect(("", 60151))
     s.settimeout(5)
 
+    response = ""
     try:
         s.sendall(bytes("echo", "ascii"))
         response = str(s.recv(1024), "ascii")
@@ -25,8 +26,27 @@ def goto(position):
     s.connect(("", 60151))
     s.settimeout(1)
 
+    response = ""
     try:
         s.sendall(bytes("goto {}".format(position), "ascii"))
+        response = str(s.recv(1024), "ascii")
+    finally:
+        s.close()
+
+    if response.startswith("OK"):
+        return True
+    return False
+
+
+def load(filepath):
+    """Return "True" if IGV answered "OK" to a load command."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("", 60151))
+    s.settimeout(1)
+
+    response = ""
+    try:
+        s.sendall(bytes("load {}".format(filepath), "ascii"))
         response = str(s.recv(1024), "ascii")
     finally:
         s.close()
