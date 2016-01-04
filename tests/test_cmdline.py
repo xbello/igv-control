@@ -69,6 +69,8 @@ class TestVCF(TestCase):
                                      "files/example-4.0.vcf")
         self.tab_file = os.path.join(os.path.dirname(__file__),
                                      "files/example.tab")
+        self.tab_file_noheader = os.path.join(os.path.dirname(__file__),
+                                              "files/example_noheader.tab")
 
     def test_can_load_vcf_file(self):
         self.assertTrue(cmdline.loadvcf(self.vcf_file))
@@ -80,4 +82,11 @@ class TestVCF(TestCase):
         self.assertFalse(cmdline.loadtab(self.vcf_file))
         self.assertTrue(cmdline.loadtab(self.tab_file))
 
-        self.assertEqual(len([_ for _ in cmdline.loadtab(self.vcf_file)]), 3)
+        self.assertEqual(len([_ for _ in cmdline.loadtab(self.tab_file)]), 3)
+
+    def test_tab_generator(self):
+        self.assertEqual(len([_ for _ in cmdline.generate_tab(
+            self.tab_file)]), 3)
+        self.assertEqual(len([_ for _ in cmdline.generate_tab(
+            self.tab_file_noheader)]), 3)
+

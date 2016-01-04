@@ -71,7 +71,28 @@ class IGV():
 
 def loadtab(filepath):
     """Return a generator if the filepath is a valid VCF 4.0 file."""
-    pass
+    with open(filepath) as tabfile:
+        first_line = tabfile.readline().split("\t")
+        if len(first_line) < 5:
+            # This doesn't seem to be a valid tab file.
+            return False
+
+    return generate_tab(filepath)
+
+
+def generate_tab(filepath):
+    """Yield line by line from a tab file except the header line."""
+    first_line = False
+    with open(filepath) as tabfile:
+        for line in tabfile:
+            if first_line:
+                yield line.split("\t")
+            else:
+                first_line = line.lower().split("\t")
+                if not any(
+                    [_ in first_line for _ in ["start", "end", "alt", "ref"]]):
+                    # This file doesn't have a header
+                    yield first_line
 
 
 def loadvcf(filepath):
