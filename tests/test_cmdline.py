@@ -1,4 +1,5 @@
 """Tests for the command line interface."""
+import os
 import socketserver
 import threading
 from unittest import TestCase
@@ -59,3 +60,24 @@ class TestCmd(TestCase):
 
     def test_we_can_send_through_command_method(self):
         self.assertEqual(self.igv_client.command("echo"), "echo")
+
+
+class TestVCF(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.vcf_file = os.path.join(os.path.dirname(__file__),
+                                     "files/example-4.0.vcf")
+        self.tab_file = os.path.join(os.path.dirname(__file__),
+                                     "files/example.tab")
+
+    def test_can_load_vcf_file(self):
+        self.assertTrue(cmdline.loadvcf(self.vcf_file))
+        self.assertFalse(cmdline.loadvcf(self.tab_file))
+
+        self.assertEqual(len([_ for _ in cmdline.loadvcf(self.vcf_file)]), 5)
+
+    def test_can_load_tab_file(self):
+        self.assertFalse(cmdline.loadtab(self.vcf_file))
+        self.assertTrue(cmdline.loadtab(self.tab_file))
+
+        self.assertEqual(len([_ for _ in cmdline.loadtab(self.vcf_file)]), 3)
