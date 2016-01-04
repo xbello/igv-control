@@ -85,8 +85,19 @@ class TestVCF(TestCase):
         self.assertEqual(len([_ for _ in cmdline.loadtab(self.tab_file)]), 3)
 
     def test_tab_generator(self):
-        self.assertEqual(len([_ for _ in cmdline.generate_tab(
+        self.assertEqual(len([_ for _ in cmdline.tab_generator(
             self.tab_file)]), 3)
-        self.assertEqual(len([_ for _ in cmdline.generate_tab(
+        self.assertEqual(len([_ for _ in cmdline.tab_generator(
             self.tab_file_noheader)]), 3)
 
+    def test_generate_chrompos_pairs_from_vcf_and_tab(self):
+        self.assertEqual([("chr20", "14370"),
+                          ("chr20", "17330"),
+                          ("chr20", "1110696"),
+                          ("chr20", "1230237"),
+                          ("chr20", "1234567")],
+                         [_ for _ in cmdline.load(self.vcf_file)])
+        self.assertEqual([("chr1", "7571115"),
+                          ("chr1", "7572645"),
+                          ("chr1", "7573472")],
+                         [_ for _ in cmdline.load(self.tab_file)])

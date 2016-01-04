@@ -69,6 +69,34 @@ class IGV():
         return False
 
 
+def tab_generator(filepath):
+    """Yield line by line from a tab file except the header line."""
+    first_line = False
+    with open(filepath) as tabfile:
+        for line in tabfile:
+            s_line = tuple(line.split("\t")[:2])
+            if first_line:
+                yield s_line
+            else:
+                first_line = line.lower().split("\t")
+                if not any(
+                    [_ in first_line for _ in ["start", "end", "alt", "ref"]]):
+                    # This file doesn't have a header
+                    yield s_line
+
+
+def load(filepath):
+    """Return a generator from a filetab if it's a VCF or a TAB file."""
+    vcf_generator = loadvcf(filepath)
+
+    if vcf_generator:
+        for variant in vcf_generator:
+            yield (variant.CHROM, str(variant.POS))
+    else:
+        for variant in loadtab(filepath):
+            yield variant
+
+
 def loadtab(filepath):
     """Return a generator if the filepath is a valid VCF 4.0 file."""
     with open(filepath) as tabfile:
@@ -77,27 +105,12 @@ def loadtab(filepath):
             # This doesn't seem to be a valid tab file.
             return False
 
-    return generate_tab(filepath)
-
-
-def generate_tab(filepath):
-    """Yield line by line from a tab file except the header line."""
-    first_line = False
-    with open(filepath) as tabfile:
-        for line in tabfile:
-            if first_line:
-                yield line.split("\t")
-            else:
-                first_line = line.lower().split("\t")
-                if not any(
-                    [_ in first_line for _ in ["start", "end", "alt", "ref"]]):
-                    # This file doesn't have a header
-                    yield first_line
+    return tab_generator(filepath)
 
 
 def loadvcf(filepath):
     """Return a generator if the filepath is a valid VCF 4.0 file."""
-    vcf_reader = vcf.Reader(open(filepath))
+    vcf_reader = vcf.Reader(open(filepath), prepend_chr=True)
 
     if vcf_reader.infos:
         # It seems to be a valid VCF file
