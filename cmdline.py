@@ -99,10 +99,8 @@ class Variants():
         return next(self.variants)
 
     def load(self):
-        """Return a generator from a filetab if it's a VCF or a TAB file."""
-        vcf_generator = self.loadvcf()
-
-        if not vcf_generator:
+        """Set a generator from a filetab if it's a VCF or a TAB file."""
+        if not self.loadvcf():
             self.loadtab()
 
     def loadtab(self):
@@ -142,57 +140,8 @@ class Variants():
                         # This file doesn't have a header
                         yield s_line
 
-    def vcf_generator(self, generator):
+    @staticmethod
+    def vcf_generator(generator):
         """Yield only the fields we are interested in from the VCF."""
         for variant in generator:
             yield (variant.CHROM, str(variant.POS))
-
-
-def tab_generator(filepath):
-    """Yield line by line from a tab file except the header line."""
-    first_line = False
-    with open(filepath) as tabfile:
-        for line in tabfile:
-            s_line = tuple(line.split("\t")[:2])
-            if first_line:
-                yield s_line
-            else:
-                first_line = line.lower().split("\t")
-                if not any(
-                    [_ in first_line for _ in ["start", "end", "alt", "ref"]]):
-                    # This file doesn't have a header
-                    yield s_line
-
-
-def load(filepath):
-    """Return a generator from a filetab if it's a VCF or a TAB file."""
-    vcf_generator = loadvcf(filepath)
-
-    if vcf_generator:
-        for variant in vcf_generator:
-            yield (variant.CHROM, str(variant.POS))
-    else:
-        for variant in loadtab(filepath):
-            yield variant
-
-
-def loadtab(filepath):
-    """Return a generator if the filepath is a valid VCF 4.0 file."""
-    with open(filepath) as tabfile:
-        first_line = tabfile.readline().split("\t")
-        if len(first_line) < 5:
-            # This doesn't seem to be a valid tab file.
-            return False
-
-    return tab_generator(filepath)
-
-
-def loadvcf(filepath):
-    """Return a generator if the filepath is a valid VCF 4.0 file."""
-    vcf_reader = vcf.Reader(open(filepath), prepend_chr=True)
-
-    if vcf_reader.infos:
-        # It seems to be a valid VCF file
-        return vcf_reader
-
-    return False
