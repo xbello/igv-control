@@ -69,6 +69,85 @@ class IGV():
         return False
 
 
+class Variants():
+
+    """A proxy to the variants contained in a VCF or TAB file.
+
+    Initialize with a file name::
+
+        >>> variants = Variants("path/to/file.vcf")
+        >>>
+
+    Get the variants through a generator at __next__::
+
+        >>> for variant in variants:
+        ...     print(variant)
+        ("chr1", "123456")
+        ("chr1", "456789")
+
+    """
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.variants = None
+        self.load()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self.variants)
+
+    def load(self):
+        """Return a generator from a filetab if it's a VCF or a TAB file."""
+        vcf_generator = self.loadvcf()
+
+        if not vcf_generator:
+            self.loadtab()
+
+    def loadtab(self):
+        """Return a generator if the filepath is a valid VCF 4.0 file."""
+        with open(self.filename) as tabfile:
+            first_line = tabfile.readline().split("\t")
+            if len(first_line) < 5:
+                # This doesn't seem to be a valid tab file.
+                return False
+
+        self.variants = self.tab_generator()
+        return True
+
+    def loadvcf(self):
+        """Return a generator if the filepath is a valid VCF 4.0 file."""
+        vcf_reader = vcf.Reader(open(self.filename), prepend_chr=True)
+
+        if vcf_reader.infos:
+            # It seems to be a valid VCF file
+            self.variants = self.vcf_generator(vcf_reader)
+            return True
+
+        return False
+
+    def tab_generator(self):
+        """Yield line by line from a tab file except the header line."""
+        first_line = False
+        with open(self.filename) as tabfile:
+            for line in tabfile:
+                s_line = tuple(line.split("\t")[:2])
+                if first_line:
+                    yield s_line
+                else:
+                    first_line = line.lower().split("\t")
+                    if not any([_ in first_line for _ in
+                                ["start", "end", "alt", "ref"]]):
+                        # This file doesn't have a header
+                        yield s_line
+
+    def vcf_generator(self, generator):
+        """Yield only the fields we are interested in from the VCF."""
+        for variant in generator:
+            yield (variant.CHROM, str(variant.POS))
+
+
 def tab_generator(filepath):
     """Yield line by line from a tab file except the header line."""
     first_line = False

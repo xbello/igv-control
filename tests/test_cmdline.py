@@ -62,7 +62,7 @@ class TestCmd(TestCase):
         self.assertEqual(self.igv_client.command("echo"), "echo")
 
 
-class TestVCF(TestCase):
+class TestVCFandTAB(TestCase):
     def setUp(self):
         super().setUp()
         self.vcf_file = os.path.join(os.path.dirname(__file__),
@@ -72,23 +72,27 @@ class TestVCF(TestCase):
         self.tab_file_noheader = os.path.join(os.path.dirname(__file__),
                                               "files/example_noheader.tab")
 
-    def test_can_load_vcf_file(self):
-        self.assertTrue(cmdline.loadvcf(self.vcf_file))
-        self.assertFalse(cmdline.loadvcf(self.tab_file))
+        self.variants_vcf = cmdline.Variants(self.vcf_file)
+        self.variants_tab = cmdline.Variants(self.tab_file)
+        self.variants_tab_noh = cmdline.Variants(self.tab_file_noheader)
 
-        self.assertEqual(len([_ for _ in cmdline.loadvcf(self.vcf_file)]), 5)
+    def test_can_load_vcf_file(self):
+        self.assertTrue(self.variants_vcf.loadvcf())
+        self.assertFalse(self.variants_tab.loadvcf())
+
+        self.assertEqual(len([_ for _ in self.variants_vcf]), 5)
 
     def test_can_load_tab_file(self):
-        self.assertFalse(cmdline.loadtab(self.vcf_file))
-        self.assertTrue(cmdline.loadtab(self.tab_file))
+        self.assertFalse(self.variants_vcf.loadtab())
+        self.assertTrue(self.variants_tab.loadtab())
 
-        self.assertEqual(len([_ for _ in cmdline.loadtab(self.tab_file)]), 3)
+        self.assertEqual(len([_ for _ in self.variants_tab]), 3)
 
     def test_tab_generator(self):
-        self.assertEqual(len([_ for _ in cmdline.tab_generator(
-            self.tab_file)]), 3)
-        self.assertEqual(len([_ for _ in cmdline.tab_generator(
-            self.tab_file_noheader)]), 3)
+        self.assertEqual(
+            len([_ for _ in self.variants_tab.tab_generator()]), 3)
+        self.assertEqual(
+            len([_ for _ in self.variants_tab_noh.tab_generator()]), 3)
 
     def test_generate_chrompos_pairs_from_vcf_and_tab(self):
         self.assertEqual([("chr20", "14370"),
@@ -96,8 +100,8 @@ class TestVCF(TestCase):
                           ("chr20", "1110696"),
                           ("chr20", "1230237"),
                           ("chr20", "1234567")],
-                         [_ for _ in cmdline.load(self.vcf_file)])
+                         [_ for _ in self.variants_vcf])
         self.assertEqual([("chr1", "7571115"),
                           ("chr1", "7572645"),
                           ("chr1", "7573472")],
-                         [_ for _ in cmdline.load(self.tab_file)])
+                         [_ for _ in self.variants_tab])
