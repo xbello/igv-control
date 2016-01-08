@@ -5,7 +5,8 @@ import helpers
 def main(cmd_args):
     """Launch the controller either through tkinter or command line."""
     if cmd_args.gui:
-        print("Here we launch the GUI.")
+        # Here we launch the GUI.
+        pass
     else:
         if cmd_args.variants:
             variants = helpers.Variants(cmd_args.variants)
@@ -17,7 +18,8 @@ def main(cmd_args):
                 return False
             variants = helpers.Variants(variants_path)
 
-        # Here we launch the command line with args.variants.")
+        # Here we launch the command line with variants.")
+        pass
 
 
 if __name__ == "__main__":
