@@ -8,15 +8,15 @@ def main(cmd_args):
         # Here we launch the GUI.
         pass
     else:
-        if cmd_args.variants:
-            variants = helpers.Variants(cmd_args.variants)
-        else:
+        if not cmd_args.variants:
             # No GUI and no FilePath provided.
             variants_path = input(
                 "Enter the file path (or quit with [q]): ")
             if variants_path.lower() == "q":
                 return False
-            variants = helpers.Variants(variants_path)
+            cmd_args.variants = variants_path
+
+        variants = helpers.Variants(cmd_args.variants)
 
         # Here we launch the command line with variants.")
         pass
