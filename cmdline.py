@@ -6,14 +6,18 @@ def main(cmd_args):
     """Launch the controller either through tkinter or command line."""
     if cmd_args.gui:
         print("Here we launch the GUI.")
-    elif cmd_args.variants:
-        variants = helpers.Variants(cmd_args.variants)
-        # Here we launch the command line with args.variants.")
     else:
-        # No GUI and no FilePath provided.
-        variant_file = input("Enter the file path (or quit with [q]): ")
-        if variant_file != "q":
-            print("Here we launch the command line with variant_file.")
+        if cmd_args.variants:
+            variants = helpers.Variants(cmd_args.variants)
+        else:
+            # No GUI and no FilePath provided.
+            variants_path = input(
+                "Enter the file path (or quit with [q]): ")
+            if variants_path.lower() == "q":
+                return False
+            variants = helpers.Variants(variants_path)
+
+        # Here we launch the command line with args.variants.")
 
 
 if __name__ == "__main__":
