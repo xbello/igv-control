@@ -59,7 +59,7 @@ class TestCmd(TestCase):
         self.assertTrue(self.igv_client.load("path/to/file.bam"))
 
     def test_we_can_send_through_command_method(self):
-        self.assertEqual(self.igv_client.command("echo"), "echo")
+        self.assertEqual(self.igv_client.command("echo"), "OK")
 
 
 class TestVCFandTAB(TestCase):

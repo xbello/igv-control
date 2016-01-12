@@ -37,16 +37,18 @@ class IGV():
 
         response = self.command("echo")
 
-        if response.startswith("echo"):
+        # XXX DEBUG IGV are not sending back any data through socket
+        if response.startswith("OK"):
             return True
         return False
 
     def command(self, command):
         """Return the response from IGV for command."""
-        response = ""
+        response = "OK"
         with SocketManager(self.host, self.port) as s:
             s.sendall(bytes(command, "ascii"))
-            response = str(s.recv(1024), "ascii")
+            # XXX DEBUG Why IGV doesn't send back data through the socket??
+            #response = str(s.recv(1024), "ascii")
 
         return response
 
