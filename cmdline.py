@@ -1,5 +1,40 @@
 """Provide access through command line to IGV controlling."""
+import readchar
+
 import helpers
+
+
+def text_mode(variants):
+    """Launch the IVG-control in text mode."""
+    controller = helpers.IGV()
+
+    # Test the IGV is running and accepting
+    if not controller.check_igv():
+        raise OSError("IGV is not running or not accepting connections\n"
+                      "on ip {}, port {}".format(controller.host,
+                                                 controller.port))
+
+    print("Press <- or ->, q to quit")
+    passed_variants = []
+
+    for variant in variants:
+        c = readchar.readkey()
+        print(readchar.key.RIGHT)
+        print(c)
+
+        if c in ("q", "Q",
+                 readchar.key.CTRL_C,
+                 readchar.key.CTRL_D,
+                 readchar.key.CTRL_Z):
+            break
+        if c == (readchar.key.RIGHT):
+            # Push the variant in the old bucket
+            passed_variants.append(variant)
+            # TODO Send the query to the IGV
+            print(variant)
+        if c == (readchar.key.LEFT):
+            # TODO Retrieve the last variant from the old bucket
+            pass
 
 
 def main(cmd_args):
@@ -19,7 +54,7 @@ def main(cmd_args):
         variants = helpers.Variants(cmd_args.variants)
 
         # Here we launch the command line with variants.")
-        pass
+        text_mode(variants)
 
 
 if __name__ == "__main__":
@@ -34,20 +69,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args)
-
-    import readchar
-
-    print("Press <- or ->, q to quit")
-
-    while True:
-        c = readchar.readkey()
-        LEFT = readchar.key.LEFT
-        RIGHT = readchar.key.RIGHT
-
-        if c in ("q", "Q",
-                 readchar.key.CTRL_C,
-                 readchar.key.CTRL_D,
-                 readchar.key.CTRL_Z):
-            break
-        if c in (LEFT, RIGHT):
-            print("Seems OK")
