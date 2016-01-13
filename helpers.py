@@ -1,34 +1,32 @@
 """Provide access through command line to IGV controlling."""
-import socket
+import telnetlib
 
 import vcf
 
 
-class SocketManager():
+class TelnetManager():
 
-    """A Context Manager to deal with Sockets."""
+    """A Context Manager to deal with Sockets through Telnet."""
 
-    def __init__(self, host, port):
+    def __init__(self, host="localhost", port=23):
         self.host = host
         self.port = port
-        self.socket = None
+        self.telnet = None
 
     def __enter__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.host, self.port))
-        self.socket.settimeout(1)
+        self.telnet = telnetlib.Telnet(self.host, self.port, 1)
 
-        return self.socket
+        return self.telnet
 
     def __exit__(self, *exc_info):
-        self.socket.close()
+        self.telnet.close()
 
 
 class IGV():
 
     """IGV wrapper to control the program through a socket."""
 
-    def __init__(self, host="", port=60151):
+    def __init__(self, host="localhost", port=60151):
         self.host = host
         self.port = port
 
@@ -37,18 +35,16 @@ class IGV():
 
         response = self.command("echo")
 
-        # XXX DEBUG IGV are not sending back any data through socket
-        if response.startswith("OK"):
+        if response.startswith("echo"):
             return True
         return False
 
     def command(self, command):
         """Return the response from IGV for command."""
-        response = "OK"
-        with SocketManager(self.host, self.port) as s:
-            s.sendall(bytes(command, "ascii"))
-            # XXX DEBUG Why IGV doesn't send back data through the socket??
-            #response = str(s.recv(1024), "ascii")
+        response = ""
+        with TelnetManager(self.host, self.port) as t:
+            t.write(bytes(command, "ascii"))
+            response = str(t.read_all(), "ascii")
 
         return response
 

@@ -16,7 +16,7 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
         if data == "echo":
             response = bytes("{}".format(data), 'ascii')
         elif data.startswith(("goto", "load")):
-            response = bytes("OK\n", 'ascii')
+            response = bytes("OK", 'ascii')
 
         self.request.sendall(response)
 
@@ -59,7 +59,7 @@ class TestCmd(TestCase):
         self.assertTrue(self.igv_client.load("path/to/file.bam"))
 
     def test_we_can_send_through_command_method(self):
-        self.assertEqual(self.igv_client.command("echo"), "OK")
+        self.assertEqual(self.igv_client.command("echo"), "echo")
 
 
 class TestVCFandTAB(TestCase):
