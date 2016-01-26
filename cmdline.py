@@ -4,36 +4,58 @@ import readchar
 import helpers
 
 
+def move_index(index, max_point):
+    """Return the new index according to the key pressed."""
+
+    c = readchar.readkey()
+
+    if c in ("q", "Q",
+             readchar.key.CTRL_C,
+             readchar.key.CTRL_D,
+             readchar.key.CTRL_Z):
+        return "QUIT"
+    elif c == (readchar.key.RIGHT):
+        if index < max_point:
+            index += 1
+    elif c == (readchar.key.LEFT):
+        if index > 0:
+            index -= 1
+
+    return index
+
+
 def text_mode(variants):
     """Launch the IVG-control in text mode."""
     controller = helpers.IGV()
 
     # Test the IGV is running and accepting
-    if not controller.check_igv():
-        raise OSError("IGV is not running or not accepting connections\n"
-                      "on ip {}, port {}".format(controller.host,
-                                                 controller.port))
+    try:
+        controller.check_igv()
+    except OSError:
+        # Be mild about timeouts because IGV timeouts a lot.
+        print("IGV was not detected " +
+              "on ip {}, port {}".format(controller.host,
+                                         controller.port))
 
-    print("Press <- or ->, q to quit")
-    passed_variants = []
+    print("Press <- or ->, [q] to quit")
 
-    for variant in variants:
-        c = readchar.readkey()
-        print(readchar.key.RIGHT)
-        print(c)
+    all_variants = list(variants)
 
-        if c in ("q", "Q",
-                 readchar.key.CTRL_C,
-                 readchar.key.CTRL_D,
-                 readchar.key.CTRL_Z):
+    index = 0
+    while True:
+        index = move_index(index, len(all_variants))
+
+        if index == "QUIT":
             break
-        if c == (readchar.key.RIGHT):
-            # Push the variant in the old bucket
-            passed_variants.append(variant)
-            # TODO Send the query to the IGV
-            print(variant)
-        if c == (readchar.key.LEFT):
-            # TODO Retrieve the last variant from the old bucket
+
+        try:
+            this_variant = all_variants[index]
+            controller.goto(":".join(this_variant))
+        except IndexError:
+            # The list overflowed on the right.
+            print("No more variants to view. Press [q] to quit")
+        except OSError:
+            # IGV is flawed somehow in the socket connection.
             pass
 
 
