@@ -1,6 +1,7 @@
 """Provide access through command line to IGV controlling."""
 import readchar
 
+from guimode import guimode
 import helpers
 
 
@@ -63,7 +64,7 @@ def main(cmd_args):
     """Launch the controller either through tkinter or command line."""
     if cmd_args.gui:
         # Here we launch the GUI.
-        pass
+        guimode()
     else:
         if not cmd_args.variants:
             # No GUI and no FilePath provided.
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument("--variants",
                         help="Path to file with variants. It works with VCF " +
                         "or TAB files.")
-    parser.add_argument("--gui", type=bool,
+    parser.add_argument("--gui", action="store_true",
                         help="Launch a Tkinter Gui to control IGV")
     args = parser.parse_args()
 
