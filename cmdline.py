@@ -70,7 +70,7 @@ def main(cmd_args):
             # No GUI and no FilePath provided.
             variants_path = input(
                 "Enter the file path (or quit with [q]): ")
-            if variants_path.lower() == "q":
+            if variants_path.lower() in ("q", ""):
                 return False
             cmd_args.variants = variants_path
 
