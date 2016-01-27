@@ -5,11 +5,20 @@ from tkinter import ttk
 
 import helpers
 
-class StatusBar(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.parent = parent
-        self.parent.resizable(0, 0)
+class StatusBar(ttk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent, padding="3 3")
+        self.grid(column=0, row=0, sticky="we")
+
+        self.info_label = tk.StringVar()
+        infoholder = ttk.Label(self, textvariable=self.info_label)
+        infoholder["relief"] = "sunken"
+        infoholder.grid(row=0, sticky="w")
+
+        self.progress_label = tk.StringVar()
+        self.progress = ttk.Label(self, textvariable=self.progress_label)
+        self.progress["relief"] = "sunken"
+        self.progress.grid(column=2, row=0, sticky="e")
 
 
 class MainApp():
@@ -33,7 +42,10 @@ class MainApp():
 
         self._menubar()
         self._mainframe()
-        self._statusbar()
+        self.statusbar = StatusBar(self.parent)
+
+        self.statusbar.grid(column=0, row=2, columnspan=2)
+        self.statusbar.columnconfigure(0, weight=1)
 
     def _menubar(self):
         menubar = tk.Menu(self.parent)
@@ -43,26 +55,21 @@ class MainApp():
         menu_file.add_command(label='New', command=self.new_file)
 
     def _mainframe(self):
-        mainframe = ttk.Frame(self.parent, padding="3 3 12 12")
-        mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
-        mainframe.columnconfigure(0, weight=1)
-        mainframe.rowconfigure(0, weight=1)
+        self.mainframe = ttk.Frame(self.parent, padding="3 3 12 12")
+        self.mainframe.grid(column=0, row=0, sticky=("nwes"))
+        self.mainframe.columnconfigure(0, weight=1)
+        self.mainframe.rowconfigure(0, weight=1)
 
-        self.prev_btn = ttk.Button(mainframe,
+        self.prev_btn = ttk.Button(self.mainframe,
                                    text="Previous",
                                    state=("disabled",),
                                    command=self.prev_item)
         self.prev_btn.grid(column=0, row=0, sticky=tk.W)
-        self.next_btn = ttk.Button(mainframe,
+        self.next_btn = ttk.Button(self.mainframe,
                                    text="Next",
                                    state=("disabled",),
                                    command=self.next_item)
-        self.next_btn.grid(column=2, row=0, sticky=tk.E)
-
-    def _statusbar(self):
-        self.info_label = tk.StringVar()
-        infoholder = ttk.Label(self.parent, textvariable=self.info_label)
-        infoholder.grid(column=0, row=1, columnspan=3)
+        self.next_btn.grid(column=1, row=0, sticky=tk.E)
 
     def new_file(self):
         variants_file = askopenfilename(
@@ -73,7 +80,8 @@ class MainApp():
         if variants_file:
             self.variants = list(helpers.Variants(variants_file))
             self.variants_index = 0
-            self.info_label.set(variants_file)
+            # Set a maximum of 22 chars
+            self.statusbar.info_label.set(variants_file[-22:])
             self.next_btn.state(statespec=("!disabled",))
 
     def next_item(self):
@@ -100,7 +108,9 @@ class MainApp():
             self.prev_btn.state(statespec=("disabled",))
 
     def _view_item(self, item):
-        self.info_label.set(item)
+        self.statusbar.info_label.set(item)
+        self.statusbar.progress_label.set("{} of {}".format(
+            self.variants_index + 1, len(self.variants)))
         try:
             self.controller.goto(":".join(item))
         except OSError:
