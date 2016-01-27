@@ -89,40 +89,27 @@ class MainApp():
         else:
             self.variants_index += 1
 
-
     def prev_item(self):
-        # We are about to serve the 0 element. Disable the PREV.
-        if self.variants_index == 1:
-            self.prev_btn.state(statespec=("disabled",))
-
         self.variants_index -= 1
         self._view_item(self.variants[self.variants_index])
 
         # Enable the NEXT button if we just come from the last element.
         self.next_btn.state(statespec=("!disabled",))
-
+        # We just served the 0 element. Disable the PREV.
+        if self.variants_index == 0:
+            self.prev_btn.state(statespec=("disabled",))
 
     def _view_item(self, item):
-        self.info_label.set(self.variants[self.variants_index])
+        self.info_label.set(item)
         try:
-            self.controller.goto(":".join(self.variants[self.variants_index]))
-        except:
+            self.controller.goto(":".join(item))
+        except OSError:
+            # IGV always timesout, even working properly.
             pass
 
 
 def guimode():
     """Launch the IGV-control as a TK GUI."""
-    controller = helpers.IGV()
-
-    # Test the IGV is running and accepting
-    try:
-        controller.check_igv()
-    except OSError:
-        # Be mild about timeouts because IGV timeouts a lot.
-        print("IGV was not detected " +
-              "on ip {}, port {}".format(controller.host,
-                                         controller.port))
-
     root = tk.Tk()
     app = MainApp(root)
     root.mainloop()
