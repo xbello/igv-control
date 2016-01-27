@@ -78,19 +78,29 @@ class MainApp():
 
     def next_item(self):
         self._view_item(self.variants[self.variants_index])
-        self.variants_index += 1
-        self.prev_btn.state(statespec=("!disabled",))
 
-        if self.variants_index == len(self.variants):
+        # Enable the PREV button if we are beyond the second element
+        if self.variants_index > 0:
+            self.prev_btn.state(statespec=("!disabled",))
+
+        if self.variants_index == len(self.variants) - 1:
+            # Disable the NEXT button at the last element.
             self.next_btn.state(statespec=("disabled",))
+        else:
+            self.variants_index += 1
+
 
     def prev_item(self):
+        # We are about to serve the 0 element. Disable the PREV.
+        if self.variants_index == 1:
+            self.prev_btn.state(statespec=("disabled",))
+
         self.variants_index -= 1
         self._view_item(self.variants[self.variants_index])
+
+        # Enable the NEXT button if we just come from the last element.
         self.next_btn.state(statespec=("!disabled",))
 
-        if self.variants_index == 0:
-            self.prev_btn.state(statespec=("disabled",))
 
     def _view_item(self, item):
         self.info_label.set(self.variants[self.variants_index])
