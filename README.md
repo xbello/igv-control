@@ -4,9 +4,15 @@ Control your IGV.
 
 ## Install
 
+### Installing the last version
+
 Clone the repo to your local system with:
 
     git clone git@github.com:xbello/igvcontrol.git
+
+### Installing a released version
+
+Download the .zip/.tar.gz from https://github.com/xbello/igvcontrol/releases and uncompress it.
 
 `igvcontrol` is only tested with `python 3.4.3`. All third party libraries are listed in the text files under `requirements` dir. Enter the directory created with the `git` command above and type:
 
@@ -28,6 +34,8 @@ Now you should be able to run, and check everything is OK:
 
 ## Running
 
+### GUI
+
 To control your IGV from a GUI interface, launch your IGV program. Then launch the `igvcontrol` with the command:
 
     $ python cmdline.py --gui
@@ -41,6 +49,8 @@ Dismiss any message saying that IGV was not detected. Something like the followi
 ![Window Sample](img/simple_gui.png)
 
 Open a file with variants in the menu, in tab or VCF format. The "Next" button should be available to start navigating the IGV.
+
+### CLI
 
 If you don't like all the clicky-clicky, you can launch the CLI with:
 
