@@ -71,6 +71,7 @@ def main(cmd_args):
             variants_path = input(
                 "Enter the file path (or quit with [q]): ")
             if variants_path.lower() in ("q", ""):
+                print("Cannot work without variants. Exiting.")
                 return False
             cmd_args.variants = variants_path
 

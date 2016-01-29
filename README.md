@@ -32,10 +32,24 @@ To control your IGV from a GUI interface, launch your IGV program. Then launch t
 
     $ python cmdline.py --gui
 
+Or
+
+    $ python guimode.py
+
 Dismiss any message saying that IGV was not detected. Something like the following windows should appear:
 
 ![Window Sample](img/simple.jpg)
 
 Open a file with variants in the menu, in tab or VCF format. The "Next" button should be available to start navigating the IGV.
+
+If you don't like all the clicky-clicky, you can launch the CLI with:
+
+    $ python cmdline.py --variants path/to/variants/file.tab (or .vcf)
+
+If the variant file is loaded, something like this should happen:
+
+    Press <- or ->, [q] to quit
+
+Browse the variants with your left and right arrows.
 
 Enjoy!
