@@ -7,18 +7,20 @@ import helpers
 
 class StatusBar(ttk.Frame):
     def __init__(self, parent):
-        super().__init__(parent, padding="3 3")
-        self.grid(column=0, row=0, sticky="we")
+        super().__init__(parent)
+        #self.grid(column=0, row=0, sticky="we")
 
         self.info_label = tk.StringVar()
-        infoholder = ttk.Label(self, textvariable=self.info_label)
-        infoholder["relief"] = "sunken"
-        infoholder.grid(row=0, sticky="w")
+        self.infoholder = ttk.Label(self, textvariable=self.info_label)
+        self.infoholder["relief"] = "sunken"
+        self.infoholder.pack(side="left", fill="x")
+        #infoholder.grid(row=0, sticky="w")
 
         self.progress_label = tk.StringVar()
         self.progress = ttk.Label(self, textvariable=self.progress_label)
         self.progress["relief"] = "sunken"
-        self.progress.grid(column=2, row=0, sticky="e")
+        self.progress.pack(side="left", fill="x")
+        #self.progress.grid(column=2, row=0, sticky="e")
 
 
 class MainApp():
@@ -44,15 +46,14 @@ class MainApp():
         self._mainframe()
         self.statusbar = StatusBar(self.parent)
 
-        self.statusbar.grid(column=0, row=2, columnspan=2)
-        self.statusbar.columnconfigure(0, weight=1)
+        self.statusbar.grid(column=0, row=2, columnspan=2, sticky="w")
 
     def _menubar(self):
         menubar = tk.Menu(self.parent)
         self.parent["menu"] = menubar
         menu_file = tk.Menu(menubar)
         menubar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New', command=self.new_file)
+        menu_file.add_command(label='New...', command=self.new_file)
 
     def _mainframe(self):
         self.mainframe = ttk.Frame(self.parent, padding="3 3 12 12")
@@ -64,12 +65,12 @@ class MainApp():
                                    text="Previous",
                                    state=("disabled",),
                                    command=self.prev_item)
-        self.prev_btn.grid(column=0, row=0, sticky=tk.W)
+        self.prev_btn.grid(column=0, row=0, sticky="w")
         self.next_btn = ttk.Button(self.mainframe,
                                    text="Next",
                                    state=("disabled",),
                                    command=self.next_item)
-        self.next_btn.grid(column=1, row=0, sticky=tk.E)
+        self.next_btn.grid(column=1, row=0, sticky="e")
 
     def new_file(self):
         variants_file = askopenfilename(
@@ -82,6 +83,8 @@ class MainApp():
             self.variants_index = 0
             # Set a maximum of 22 chars
             self.statusbar.info_label.set(variants_file[-22:])
+            self.statusbar.progress_label.set("{} variants".format(
+                len(self.variants)))
             self.next_btn.state(statespec=("!disabled",))
 
     def next_item(self):
@@ -123,3 +126,6 @@ def guimode():
     root = tk.Tk()
     app = MainApp(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    guimode()
