@@ -1,0 +1,2 @@
+# igvcontrol
+Control your IGV.
