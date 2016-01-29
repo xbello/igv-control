@@ -34,7 +34,7 @@ To control your IGV from a GUI interface, launch your IGV program. Then launch t
 
 Dismiss any message saying that IGV was not detected. Something like the following windows should appear:
 
-![Window Sample](img/simple.jpg)
+![Window Sample](img/simple_gui.jpg)
 
 Open a file with variants in the menu, in tab or VCF format. The "Next" button should be available to start navigating the IGV.
 
