@@ -36,7 +36,7 @@ Or
 
     $ python guimode.py
 
-Dismiss any message saying that IGV was not detected. Something like the following windows should appear:
+Dismiss any message saying that IGV was not detected. Something like the following window should appear:
 
 ![Window Sample](img/simple_gui.png)
 
@@ -44,7 +44,7 @@ Open a file with variants in the menu, in tab or VCF format. The "Next" button s
 
 If you don't like all the clicky-clicky, you can launch the CLI with:
 
-    $ python cmdline.py --variants path/to/variants/file.tab (or .vcf)
+    $ python cmdline.py --variants path/to/variants/file.tab  # (or .vcf)
 
 If the variant file is loaded, something like this should happen:
 
