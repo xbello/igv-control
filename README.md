@@ -31,5 +31,11 @@ Now you should be able to run, and check everything is OK:
 To control your IGV from a GUI interface, launch your IGV program. Then launch the `igvcontrol` with the command:
 
     $ python cmdline.py --gui
-    
+
+Dismiss any message saying that IGV was not detected. Something like the following windows should appear:
+
+![Window Sample](img/simple.jpg)
+
 Open a file with variants in the menu, in tab or VCF format. The "Next" button should be available to start navigating the IGV.
+
+Enjoy!
