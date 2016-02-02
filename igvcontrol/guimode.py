@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter.filedialog import askopenfilename
 from tkinter import ttk
 
-import helpers
+from igvcontrol import helpers
 
 class StatusBar(ttk.Frame):
     def __init__(self, parent):

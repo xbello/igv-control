@@ -1,3 +1,5 @@
 -r base.txt
 
 pytest==2.8.5
+# PyVirtualDisplay==0.1.5
+tox==2.3.1

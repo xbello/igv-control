@@ -1,4 +1,8 @@
 *.swp
+# This is a symlink to make tox happy
+README
 
+dist/
 .cache/
+.tox/
 __pycache__

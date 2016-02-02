@@ -1,8 +1,8 @@
 """Provide access through command line to IGV controlling."""
 import readchar
 
-from guimode import guimode
-import helpers
+from igvcontrol.guimode import guimode
+from igvcontrol import helpers
 
 
 def move_index(index, max_point):

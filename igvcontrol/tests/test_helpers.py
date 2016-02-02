@@ -4,7 +4,7 @@ import socketserver
 import threading
 from unittest import TestCase
 
-import helpers
+from igvcontrol import helpers
 
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):

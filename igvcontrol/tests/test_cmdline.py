@@ -2,7 +2,7 @@
 import os
 from unittest import mock, TestCase
 
-import cmdline
+from igvcontrol import cmdline
 
 
 def _fake_input(*args):
@@ -10,8 +10,8 @@ def _fake_input(*args):
 
 
 class TestMain(TestCase):
-    @mock.patch("cmdline.text_mode")
-    @mock.patch("helpers.Variants")
+    @mock.patch("igvcontrol.cmdline.text_mode")
+    @mock.patch("igvcontrol.helpers.Variants")
     def test_main_launches_commandline(self, variants_mock, text_mode_mock):
         args = mock.Mock()
         args.gui = False
@@ -24,8 +24,8 @@ class TestMain(TestCase):
 
         variants_mock.assert_called_with(sample_path)
 
-    @mock.patch("cmdline.text_mode")
-    @mock.patch("helpers.Variants")
+    @mock.patch("igvcontrol.cmdline.text_mode")
+    @mock.patch("igvcontrol.helpers.Variants")
     @mock.patch("builtins.input")
     def test_main_launches_commandline_without_variants(self,
                                                         input_mock,
