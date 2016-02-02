@@ -105,3 +105,37 @@ class TestVCFandTAB(TestCase):
                           ("chr1", "7572645"),
                           ("chr1", "7573472")],
                          [_ for _ in self.variants_tab])
+
+
+class TestXLSandODF(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.xls_file = os.path.join(os.path.dirname(__file__),
+                                     "files/example.xls")
+        self.xlsx_file = os.path.join(os.path.dirname(__file__),
+                                      "files/example.xlsx")
+
+        self.variants_xls = helpers.Variants(self.xls_file)
+        self.variants_xlsx = helpers.Variants(self.xlsx_file)
+
+    def test_can_load_xls_file(self):
+        self.assertTrue(self.variants_xls.loadxls())
+
+        self.assertEqual(len([_ for _ in self.variants_xls]), 3)
+
+    def test_can_load_xlsx_file(self):
+        self.assertTrue(self.variants_xlsx.loadxls())
+
+        self.assertEqual(len([_ for _ in self.variants_xlsx]), 3)
+
+    def test_generate_chrompos_pairs_from_xls(self):
+        self.assertEqual([("chr1", "7571115"),
+                          ("chr1", "7572645"),
+                          ("chr1", "7573472")],
+                         [_ for _ in self.variants_xls])
+
+    def test_generate_chrompos_pairs_from_xlsx(self):
+        self.assertEqual([("chr1", "7571115"),
+                          ("chr1", "7572645"),
+                          ("chr1", "7573472")],
+                         [_ for _ in self.variants_xlsx])

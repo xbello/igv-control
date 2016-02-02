@@ -98,7 +98,9 @@ class Variants():
 
     def load(self):
         """Set a generator from a filetab if it's a VCF or a TAB file."""
-        if not self.loadvcf():
+        if self.filename.endswith((".xls", ".xlsx")):
+            self.loadxls()
+        elif not self.loadvcf():
             self.loadtab()
 
     def loadtab(self):
@@ -123,6 +125,16 @@ class Variants():
 
         return False
 
+    def loadxls(self):
+        """Return True if it can set a generator with the filename."""
+        from xlrd import open_workbook
+
+        book = open_workbook(self.filename)
+
+        self.variants = self.xls_generator(book.sheet_by_index(0))
+
+        return True
+
     def tab_generator(self):
         """Yield line by line from a tab file except the header line."""
         first_line = False
@@ -143,3 +155,24 @@ class Variants():
         """Yield only the fields we are interested in from the VCF."""
         for variant in generator:
             yield (variant.CHROM, str(variant.POS))
+
+    @staticmethod
+    def xls_generator(sheet):
+        """Yield only the fields we are interested in from the XLS."""
+        first_line = False
+        for row in sheet.get_rows():
+            chrom = row[0].value
+            try:
+                position = int(row[1].value)
+            except ValueError:
+                # This must be the header with "Start"
+                position = row[1].value
+            s_line = tuple([chrom, str(position)])
+            if first_line:
+                yield s_line
+            else:
+                first_line = [_.value.lower() for _ in row]
+                if not any([_ in first_line for _ in
+                            ["start", "end", "alt", "ref"]]):
+                    # This file doesn't have a header
+                    yield s_line

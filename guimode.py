@@ -76,6 +76,7 @@ class MainApp():
         variants_file = askopenfilename(
             filetypes=(("Tabbed files", ("*.tab", "*.txt")),
                        ("VCF files", "*.vcf"),
+                       ("Excel files", ("*.xls", "*.xlsx")),
                        ("All files", "*")))
 
         if variants_file:

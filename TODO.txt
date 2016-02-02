@@ -1,5 +1,11 @@
-* Add Excel files support.
+TODO
 * Add automatic filtering.
 * Add some sanity to launch process.
  - Load BAM, genomes and so from the GUI.
  - Launch the GUI with double-click.
+
+v0.2
+* Add Excel files support.
+
+v0.1
+* It works.
