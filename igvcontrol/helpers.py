@@ -43,8 +43,12 @@ class IGV():
         """Return the response from IGV for command."""
         response = ""
         with TelnetManager(self.host, self.port) as t:
-            t.write(bytes(command, "ascii"))
-            response = str(t.read_all(), "ascii")
+            try:
+                t.write(bytes(command, "ascii"))
+                response = str(t.read_all(), "ascii")
+            except TypeError:
+                t.write(command)
+                response = t.read_all()
 
         return response
 
@@ -95,6 +99,9 @@ class Variants():
 
     def __next__(self):
         return next(self.variants)
+
+    def next(self):
+        return self.__next__()
 
     def load(self):
         """Set a generator from a filetab if it's a VCF or a TAB file."""

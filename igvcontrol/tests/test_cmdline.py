@@ -1,8 +1,18 @@
 """Tests for the command line interface."""
 import os
-from unittest import mock, TestCase
+from unittest import TestCase
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from igvcontrol import cmdline
+
+try:
+    import builtins
+    input_module = "builtins.input"
+except ImportError:
+    input_module = "__builtin__.input"
 
 
 def _fake_input(*args):
@@ -26,7 +36,7 @@ class TestMain(TestCase):
 
     @mock.patch("igvcontrol.cmdline.text_mode")
     @mock.patch("igvcontrol.helpers.Variants")
-    @mock.patch("builtins.input")
+    @mock.patch(input_module)
     def test_main_launches_commandline_without_variants(self,
                                                         input_mock,
                                                         variants_mock,

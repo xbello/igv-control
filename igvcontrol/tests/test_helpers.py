@@ -1,35 +1,50 @@
 """Tests for the helper classes."""
 import os
-import socketserver
+try:
+    import socketserver
+except ImportError:
+    import SocketServer as socketserver
 import threading
 from unittest import TestCase
 
 from igvcontrol import helpers
 
 
-class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
+class TCPRequestHandler(socketserver.BaseRequestHandler):
     def handle(self):
         """Return the same it receives."""
-        data = str(self.request.recv(1024), 'ascii')
+        data = self.request.recv(1024)
+        try:
+            data = str(data, 'ascii')
+        except TypeError:
+            pass
 
-        response = bytes("", "ascii")
-        if data == "echo":
-            response = bytes("{}".format(data), 'ascii')
-        elif data.startswith(("goto", "load")):
-            response = bytes("OK", 'ascii')
+        responses = {"echo": "echo",
+                     "goto": "OK",
+                     "load": "OK",
+                     "": "ERROR"}
 
-        self.request.sendall(response)
+        response_text = responses.get(data.split()[0] if data else "")
+        try:
+            response_text = bytes("{}".format(response_text), 'ascii')
+        except TypeError:
+            pass
+
+        print(response_text)
+        self.request.sendall(response_text)
 
 
-class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+class TCPServer(socketserver.TCPServer):
     allow_reuse_address = True
 
 
 class TestCmd(TestCase):
     def setUp(self):
-        super().setUp()
-        self.igv_server = ThreadedTCPServer(
-            ("", 60151), ThreadedTCPRequestHandler)
+        try:
+            super().setUp()
+        except TypeError:
+            super(TestCmd, self).setUp()
+        self.igv_server = TCPServer(("localhost", 60151), TCPRequestHandler)
 
         server_thread = threading.Thread(target=self.igv_server.serve_forever)
         server_thread.daemon = True
@@ -40,7 +55,10 @@ class TestCmd(TestCase):
     def tearDown(self):
         self.igv_server.shutdown()
         self.igv_server.server_close()
-        super().tearDown()
+        try:
+            super().tearDown()
+        except TypeError:
+            super(TestCmd, self).tearDown()
 
     def test_can_IGV_client_as_object(self):
         self.assertTrue(isinstance(self.igv_client, helpers.IGV))
@@ -64,7 +82,10 @@ class TestCmd(TestCase):
 
 class TestVCFandTAB(TestCase):
     def setUp(self):
-        super().setUp()
+        try:
+            super().setUp()
+        except TypeError:
+            super(TestVCFandTAB, self).setUp()
         self.vcf_file = os.path.join(os.path.dirname(__file__),
                                      "files/example-4.0.vcf")
         self.tab_file = os.path.join(os.path.dirname(__file__),
@@ -109,7 +130,10 @@ class TestVCFandTAB(TestCase):
 
 class TestXLSandODF(TestCase):
     def setUp(self):
-        super().setUp()
+        try:
+            super().setUp()
+        except TypeError:
+            super(TestXLSandODF, self).setUp()
         self.xls_file = os.path.join(os.path.dirname(__file__),
                                      "files/example.xls")
         self.xlsx_file = os.path.join(os.path.dirname(__file__),

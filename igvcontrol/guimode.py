@@ -1,7 +1,12 @@
 """GUI for IGV controller."""
-import tkinter as tk
-from tkinter.filedialog import askopenfilename
-from tkinter import ttk
+try:
+    import tkinter as tk
+    from tkinter.filedialog import askopenfilename
+    from tkinter import ttk
+except:
+    import Tkinter as tk
+    from tkFileDialog import askopenfilename
+    import ttk
 
 from igvcontrol import helpers
 

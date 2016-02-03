@@ -1,4 +1,5 @@
 *.swp
+*.pyc
 # This is a symlink to make tox happy
 README
 
