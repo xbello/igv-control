@@ -30,7 +30,6 @@ class TCPRequestHandler(socketserver.BaseRequestHandler):
         except TypeError:
             pass
 
-        print(response_text)
         self.request.sendall(response_text)
 
 
