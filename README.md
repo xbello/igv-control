@@ -14,7 +14,7 @@ Clone the repo to your local system with:
 
 Download the .zip/.tar.gz from https://github.com/xbello/igvcontrol/releases and uncompress it.
 
-`igvcontrol` is only tested with `python 3.4.3`. All third party libraries are listed in the text files under `requirements` dir. Enter the directory created with the `git` command above and type:
+`igvcontrol` is only tested with `python 3.4.3` and `python 2.7.10`. All third party libraries are listed in the text files under `requirements` dir. Enter the directory created with the `git` command above and type:
 
     pip install -r requirements/base.txt
 
