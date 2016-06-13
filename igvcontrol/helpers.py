@@ -45,10 +45,10 @@ class IGV():
         with TelnetManager(self.host, self.port) as t:
             try:
                 t.write(bytes(command, "ascii"))
-                response = str(t.read_all(), "ascii")
+                response = str(t.read_until(b"\n"), "ascii")
             except TypeError:
                 t.write(command)
-                response = t.read_all()
+                response = t.read_until("\n")
 
         return response
 
