@@ -42,6 +42,8 @@ class IGV():
     def command(self, command):
         """Return the response from IGV for command."""
         response = ""
+        if not command.endswith("\n"):
+            command += "\n"
         with TelnetManager(self.host, self.port) as t:
             try:
                 t.write(bytes(command, "ascii"))
