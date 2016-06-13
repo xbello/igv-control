@@ -12,7 +12,10 @@ from igvcontrol import helpers
 
 class StatusBar(ttk.Frame):
     def __init__(self, parent):
-        super().__init__(parent)
+        try:
+            super().__init__(parent)
+        except TypeError:
+            super(StatusBar, self).__init__(parent)
         #self.grid(column=0, row=0, sticky="we")
 
         self.info_label = tk.StringVar()
