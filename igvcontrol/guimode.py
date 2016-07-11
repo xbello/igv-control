@@ -8,9 +8,12 @@ except:
     from tkFileDialog import askopenfilename
     import ttk
 
-from igvcontrol import helpers
+try:
+    import helpers
+except:
+    from igvcontrol import helpers
 
-class StatusBar(ttk.Frame):
+class StatusBar(ttk.Frame, object):
     def __init__(self, parent):
         try:
             super().__init__(parent)
